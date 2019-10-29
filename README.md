@@ -46,14 +46,14 @@
 
 ## Greynoise Hunting Techniques ##
 
-1. Download the malicious data from the past 24 hours
-11. Compare against data set
+* Download the malicious data from the past 24 hours
+	* Compare against data set
 
-1. Download the benign data from the past 24 hours
-11. Use as pool to compare incoming alerts.
+* Download the benign data from the past 24 hours
+	* Use as pool to compare incoming alerts.
 
-1. Perform hunting technique against data set to get a list of suspicious IP addresses
-11. Perform API request to get disposition of IP
+* Perform hunting technique against data set to get a list of suspicious IP addresses
+	* Perform API request to get disposition of IP
 
 
 ## Resources ##
