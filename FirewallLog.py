@@ -28,8 +28,6 @@ from datetime import datetime
 
 class FirewallLog:
 
-	ALLOWED_PORTS = [80, 443, 53]
-
 	ALLOWED_EGRESS_PORTS = [80, 443, 53]
 
 	ALLOWED_INGRESS_PORTS = [80, 443]
@@ -70,6 +68,9 @@ class FirewallLog:
 	# Destination port
 	dport = ""
 
+	# User agent
+	user_agent = ""
+
 	is_egress = True
 
 	def __init__(self, data_set):
@@ -79,6 +80,10 @@ class FirewallLog:
 		self.dport = int(data_set["dport"])
 		self.protocol = data_set["protocol"].lower()
 		self.bytes_transferred = int(data_set["bytes_transferred"])
+
+		if "user_agent" in data_set:
+			self.user_agent = data_set["user_agent"]
+		
 		self.time = data_set["time"]
 		self.log_type = data_set["log_type"].lower()
 		self.action = data_set["action"].lower()
@@ -88,28 +93,48 @@ class FirewallLog:
 		else:
 			self.is_egress = False
 
+	# Input: None
+	# Return: float
+	def getRiskScore(self):
+		risk_score = 0.0
 
-	def hasAnomly(self):
-		if self.wasDenied() or self.hasPortAnomoly() or self.hasPortProtocolAnomoly() or self.hasByteAnomoly() or self.hasEgressAnomoly()or self.hasIngressAnomoly():
-			return True
-		return False
+		# Denied / Inbound: 5 Points
+		if self.wasDenied() or self.hasIngressAnomoly():
+			risk_score += 5.0
 
+		# Large Byte Size: 5 Points
+		if self.hasByteAnomoly():
+			risk_score += 5.0
 
+		# Protocol: (10 Points * 2) = 20 Points
+		if self.hasPortProtocolAnomoly():
+			risk_score += 10.0
+
+		if self.hasEgressAnomoly():
+			risk_score += 10.0
+
+		return risk_score
+
+	# Input: None
+	# Return: Boolean
 	def wasDenied(self):
 		if self.action == "deny":
 			return True
 		return False
 
-	def hasPortAnomoly(self):
-		if self.is_egress and self.dport in self.ALLOWED_PORTS:
-			return True
+	# Input: None
+	# Return: Boolean
+	# def hasPortAnomoly(self):
+	# 	if self.is_egress and self.dport not in self.ALLOWED_EGRESS_PORTS:
+	# 		return True
 
-		if self.is_egress == False and self.sport in self.ALLOWED_PORTS:
-			return True
+	# 	if not self.is_egress and self.dport not in self.ALLOWED_INGRESS_PORTS:
+	# 		return True
 
-		return False
+	# 	return False
 
-
+	# Input: None
+	# Return: Boolean
 	def hasPortProtocolAnomoly(self):
 		try:
 			if self.PORT_PROTOCOL[self.sport] != self.protocol:
@@ -124,16 +149,22 @@ class FirewallLog:
 
 		return False
 
+	# Input: None
+	# Return: Boolean
 	def hasByteAnomoly(self):
 		if self.bytes_transferred >= self.MAX_SIZE_THRESHOLD:
 			return True
 		return False
 
+	# Input: None
+	# Return: Boolean
 	def hasIngressAnomoly(self):
 		if not self.is_egress and self.dport not in self.ALLOWED_INGRESS_PORTS:
 			return True
 		return False
 
+	# Input: None
+	# Return: Boolean
 	def hasEgressAnomoly(self):
 		if self.is_egress and self.dport not in self.ALLOWED_EGRESS_PORTS:
 			return True

@@ -4,17 +4,17 @@
 1. Establish a baseline
 1. Analyze the protocol
 1. Scrutinize the reputation of the destination
-1. Determine Disposition
+1. Determine disposition
 
 
 ## Score Rubrik (0 - 100) More than 100 points possible. ##
-* Persistent Communications: (~60)
-* Protocol: (~20)
-* Reputation: (~10)
-* Unique Subdomains: (~10)
-* Unique User Agent: (~5)
-* Large Byte Sizes: (~5)
-
+* Persistent Communications: (~ 60)
+* Protocol: (~ 20)
+* Reputation: (~ 10)
+* Unique Subdomains: (~ 10)
+* Unique User Agent: (~ 5)
+* Large Byte Sizes: (~ 5)
+* Denied / Malicous Inbound Connections: (~ 5)
 
 ## Persistent Communications ##
 * Check Connection Duration (4+ hours is typically worth investigating)
